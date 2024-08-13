@@ -44,6 +44,16 @@ bool checkCollision(const SDL_Rect& a, const SDL_Rect& b) {
             a.y < b.y + b.h);
 }
 
+void solveForHit(const SDL_Rect& attacker, const SDL_Rect& target, double& vxOut, double& vyOut) {
+    double deltaX = target.x - attacker.x;
+    double deltaY = target.y - attacker.y;
+
+    double t = deltaX / (force / 10.0);
+
+    vxOut = deltaX / t;
+    vyOut = deltaY / t + 0.5 * 9.81 * t;
+}
+
 struct Projectile {
     double x, y;
     double vx, vy;
@@ -101,42 +111,86 @@ int main(int argc, char* argv[]) {
     SDL_Texture* currentDogTexture = dogIdle;
 
     while (!quit) {
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                quit = true;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
-                mouse_x1 = e.button.x;
-                mouse_y1 = e.button.y;
-                if (turn == Turn::CAT) {
-                    currentCatTexture = catPrepare;
-                } else {
-                    currentDogTexture = dogPrepare;
-                }
-            } else if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT) {
-                mouse_x2 = e.button.x;
-                mouse_y2 = e.button.y;
-                angle();
-                if (turn == Turn::CAT) {
-                    currentCatTexture = catThrow;
-                } else {
-                    currentDogTexture = dogThrow;
-                }
-                if (shot) {
-                    if (turn == Turn::CAT) {
-                        projectile.x = catRect.x + catRect.w - 90;
-                        projectile.y = catRect.y + catRect.h / 2 - 70;
-                        projectile.texture = loadTexture("Can.png", renderer);  // Cat uses Can.png
-                    } else {
-                        projectile.x = dogRect.x + 90;
-                        projectile.y = dogRect.y + dogRect.h / 2 - 70;
-                        projectile.texture = loadTexture("Bone.png", renderer);  // Dog uses Bone.png
-                    }
-                    projectile.vx = std::cos(theta * M_PI / 180.0) * force / 10;
-                    projectile.vy = std::sin(theta * M_PI / 180.0) * force / 10;
+        while (SDL_PollEvent(&e)) {
+            switch (e.type) {
+                case SDL_QUIT:
+                    quit = true;
+                    break;
 
-                    SDL_QueryTexture(projectile.texture, NULL, NULL, &projectile.rect.w, &projectile.rect.h);
-                    projectileInFlight = true;
-                }
+                case SDL_MOUSEBUTTONDOWN:
+                    if (e.button.button == SDL_BUTTON_LEFT) {
+                        cout << "Mouse button down" << endl;
+                        mouse_x1 = e.button.x;
+                        mouse_y1 = e.button.y;
+                        if (turn == Turn::CAT) {
+                            currentCatTexture = catPrepare;
+                        } else {
+                            currentDogTexture = dogPrepare;
+                        }
+                    }
+                    break;
+
+                case SDL_MOUSEBUTTONUP:
+                    if (e.button.button == SDL_BUTTON_LEFT) {
+                        mouse_x2 = e.button.x;
+                        mouse_y2 = e.button.y;
+                        angle();
+                        if (turn == Turn::CAT) {
+                            currentCatTexture = catThrow;
+                        } else {
+                            currentDogTexture = dogThrow;
+                        }
+                        if (shot) {
+                            if (turn == Turn::CAT) {
+                                projectile.x = catRect.x + catRect.w - 90;
+                                projectile.y = catRect.y + catRect.h / 2 - 70;
+                                projectile.texture = loadTexture("Can.png", renderer);
+                            } else {
+                                projectile.x = dogRect.x + 90;
+                                projectile.y = dogRect.y + dogRect.h / 2 - 70;
+                                projectile.texture = loadTexture("Bone.png", renderer);
+                            }
+                            projectile.vx = std::cos(theta * M_PI / 180.0) * force / 10;
+                            projectile.vy = std::sin(theta * M_PI / 180.0) * force / 10;
+
+                            SDL_QueryTexture(projectile.texture, NULL, NULL, &projectile.rect.w, &projectile.rect.h);
+                            projectileInFlight = true;
+                        }
+                    }
+                    break;
+
+                case SDL_KEYDOWN:
+                    if (e.key.keysym.sym == SDLK_d) {
+                        double vx, vy;
+                        cout << "Dit me SDL" << endl;
+
+                        currentDogTexture = dogThrow;
+                        if (turn == Turn::CAT) {
+                            solveForHit(catRect, dogRect, vx, vy);
+                            projectile.x = catRect.x + catRect.w - 90;
+                            projectile.y = catRect.y + catRect.h / 2 - 70;
+                            projectile.texture = loadTexture("Can.png", renderer);
+                        } else {
+                            solveForHit(dogRect, catRect, vx, vy);
+                            projectile.x = dogRect.x + 90;
+                            projectile.y = dogRect.y + dogRect.h / 2 - 70;
+                            projectile.texture = loadTexture("Bone.png", renderer);
+                        }
+
+                        projectile.vx = vx;
+                        projectile.vy = vy;
+                        cout << "Hit calculated with vx: " << vx << ", vy: " << vy << endl;
+
+                        SDL_QueryTexture(projectile.texture, NULL, NULL, &projectile.rect.w, &projectile.rect.h);
+                        projectileInFlight = true;
+
+                        if (turn == Turn::CAT) {
+                            currentCatTexture = catThrow;
+                        } else {
+                            currentDogTexture = dogThrow;
+                        }
+                    }
+                    break;
             }
         }
 
@@ -160,15 +214,8 @@ int main(int argc, char* argv[]) {
                 hit = true;
                 projectileInFlight = false;
                 SDL_DestroyTexture(projectile.texture);
-                projectile.texture = nullptr;
-
-                if (turn == Turn::CAT) {
-                    turn = Turn::DOG;
-                    currentCatTexture = catIdle;
-                } else {
-                    turn = Turn::CAT;
-                    currentDogTexture = dogIdle;
-                }
+                turn = Turn::DOG;
+                currentCatTexture = catIdle;
             }
             // Check collision with Cat
             else if (turn == Turn::DOG && checkCollision(projectile.rect, catRect)) {
@@ -176,15 +223,8 @@ int main(int argc, char* argv[]) {
                 hit = true;
                 projectileInFlight = false;
                 SDL_DestroyTexture(projectile.texture);
-                projectile.texture = nullptr;
-
-                if (turn == Turn::CAT) {
-                    turn = Turn::DOG;
-                    currentCatTexture = catIdle;
-                } else {
-                    turn = Turn::CAT;
-                    currentDogTexture = dogIdle;
-                }
+                turn = Turn::CAT;
+                currentDogTexture = dogIdle;
             }
             // Check collision with the wall
             else if (checkCollision(projectile.rect, wallRect)) {
@@ -202,12 +242,30 @@ int main(int argc, char* argv[]) {
                 if (turn == Turn::CAT) {
                     turn = Turn::DOG;
                     currentDogTexture = dogLaugh;
+                    currentCatTexture = catIdle;
                 } else {
                     turn = Turn::CAT;
                     currentCatTexture = catLaugh;
+                    currentDogTexture = dogIdle;
                 }
             }
-            // If hit, reset projectile
+            // **New check: Remove projectile if it hits left or right edge of the screen**
+            else if (projectile.x < 0 || projectile.x > SCREEN_WIDTH) {
+                projectileInFlight = false;
+                SDL_DestroyTexture(projectile.texture);
+                projectile.texture = nullptr;
+
+                // Switch turn and show laughing texture
+                if (turn == Turn::CAT) {
+                    turn = Turn::DOG;
+                    currentDogTexture = dogLaugh;
+                    currentCatTexture = catIdle;
+                } else {
+                    turn = Turn::CAT;
+                    currentCatTexture = catLaugh;
+                    currentDogTexture = dogIdle;
+                }
+            }
         }
 
         // Render everything
