@@ -447,7 +447,7 @@ int main(int argc, char* argv[]) {
                     currentCatTexture = catIdle;
                     commentaryTexture = renderText("Dog Hit !", font, textColor, renderer);
                     commentaryStartTime = SDL_GetTicks();
-                    dogHealthBar.decreaseHealth(50);
+                    dogHealthBar.decreaseHealth(10);
                     if (dogHealthBar.gethp()<=0)
                     {
                         int endgame = endgameMainMenu(renderer, fontmenu,1);
@@ -698,5 +698,3 @@ void closeMusic() {
     Mix_FreeMusic(gameMusic);
     Mix_CloseAudio();
 }
-
-
