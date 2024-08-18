@@ -12,7 +12,7 @@
    	- [Nhược điểm](#Nhược-điểm)
    	- [Bài học kinh nghiệm](#Bài-học-kinh-nghiệm)
    	- [Hướng phát triển Game trong tương lai](#Hướng-phát-triển-Game-trong-tương-lai)
-   	- [Nguyện vọng về điểm](#Nguyện-vong-về-điểm)
+   	- [Nguyện vọng về điểm](#nguyện-vọng-về-điểm)
 
 
 
