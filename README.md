@@ -4,7 +4,7 @@
 - [Giới thiệu về Game](#Giới-thiệu-về-Game)
 - [Hướng dẫn chơi Game](#Hướng-dẫn-chơi-Game)
 - [Một vài hình ảnh của Game](#Một-vài-hình-ảnh-của-Game)
-- [Cấu trúc Game](#Cấu-trúc-Game)
+- [Cấu trúc Game](#cấu-trúc-)
 - [Cách cài đặt](#Cách-cài-đặt)
 - [Nguồn tham khảo](#Nguồn-tham-khảo)
 - [Kết luận](#Kết-luận)
