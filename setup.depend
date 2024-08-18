@@ -1,6 +1,17 @@
 # depslib dependency file v1.0
-1723109680 source:d:\github\setup\main.cpp
+1723991802 source:d:\github\setup\main.cpp
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
+	<cmath>
+	<SDL_ttf.h>
+	<SDL_mixer.h>
+
+1723987967 source:d:\github\setup\healthbar.cpp
+	<SDL.h>
+
+1723987967 source:d:\github\setup\projectile.cpp
+	<SDL.h>
+	<SDL_image.h>
+	<cmath>
 
