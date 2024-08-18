@@ -10,7 +10,7 @@
 - [Kết luận](#Kết-luận)
   	- [Ưu điểm](#Ưu-điểm)
    	- [Nhược điểm](#Nhược-điểm)
-   	- [Bài học kinh nghiệm](#khó-khăn-và-bài-học)
+   	- [Khó khăn và bài học](#khó-khăn-và-bài-học)
    	- [Hướng phát triển Game trong tương lai](#Hướng-phát-triển-Game-trong-tương-lai)
    	- [Nguyện vọng về điểm](#nguyện-vọng-về-điểm)
 
