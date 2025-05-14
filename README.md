@@ -148,4 +148,3 @@ Chạy file thực thi đã biên dịch:
 
 ### Nguyện vọng về điểm
 Mức điểm mong muốn 8.5+/10.
-https://github.com/somfu1/DictionaryApplication
